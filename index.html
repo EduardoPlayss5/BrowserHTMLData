@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BrowserHTML</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+        }
+
+        .navbar {
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        button {
+            background-color: #555;
+            color: #fff;
+            border: none;
+            padding: 8px;
+            margin: 0 5px;
+            border-radius: 4px;
+        }
+
+        button:hover {
+            background-color: #777;
+        }
+
+        #addressBar {
+            flex-grow: 1;
+            padding: 8px;
+            margin: 0 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        #goBtn {
+            background-color: #4caf50;
+            color: #fff;
+        }
+
+        #goBtn:hover {
+            background-color: #45a049;
+        }
+
+        #menuBtn {
+            background-color: #2196F3;
+            color: #fff;
+        }
+
+        #menuBtn:hover {
+            background-color: #0d8bf2;
+        }
+
+        .website {
+            width: 100%;
+            height: calc(100vh - 40px);
+        }
+
+        .website iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .tip {
+            font-size: 16px;
+    background-color: #000;
+    color: #fff;
+    padding: 10px;
+    border-radius: 5px;
+    margin: 10px 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <button id="reloadBtn" onclick="refreshIFrame()">&#8635;</button>
+        <button id="homeBtn" onclick="homeBtn()">Casa</button>
+        <input type="text" id="addressBar" placeholder="Digite o URL">
+        <button id="goBtn" onclick="goSite()">Ir</button>
+        <button id="menuBtn" onclick="toggleOptions()">Opções</button>
+    </div>
+
+    <div class="website">
+        <iframe id="iframe" sandbox="allow-same-origin allow-scripts"></iframe>
+    </div>
+
+    <div class="settingsPage hidden" id="settings">
+        <p>
+            Language:
+        </p>
+        <p class="tip">Changes the Browser Language (not all pages)</p>
+        <select id="language">
+            <option value="pt-BR">Portuguese (Brazilian)</option>
+            <option value="en-US">English</option>
+        </select>
+        <p>
+            Redirect Auto
+        </p>
+        <p class="tip">Redirects to HTTPS when a site is on HTTP (it loops if site only support http) *for security</p>
+        <select id="redirectHTTPAuto">
+            <option value="yes">Yes</option>
+            <option value="no">No</option>
+        </select>
+        <p>
+            Browser Default URL
+        </p>
+        <p class="tip">The Browser Default URL. Trigged when pressing 'Home' Button</p>
+        <input type="text" id="defaultURL" placeholder="Default page url" value="https://www.google.com/"/>
+        <button class="saveSettings" onclick="updateSettings()">Save Settings</button>
+    </div>
+
+    <script>
+        let SHOWED_OPTIONS = false;
+
+        const neutralContent = {
+            "aboutblk": "about:blank",
+        };
+
+        let DEFAULT_HOMEURL = "https://google.com/";
+        let DEFAULT_LANGUAGE = "en-US";
+        let REDIRECT_HTTP_HTTPS = true;
+
+        function toggleOptions() {
+            if (!SHOWED_OPTIONS) {
+                SHOWED_OPTIONS = true;
+                showOptions();
+            } else if (SHOWED_OPTIONS) {
+                SHOWED_OPTIONS = false;
+                hideOptions();
+            }
+        }
+
+        function showOptions() {
+            document.getElementById("settings").classList.remove("hidden");
+            document.querySelector(".website").style.display = "none";
+        }
+
+        function hideOptions() {
+            document.getElementById("settings").classList.add("hidden");
+            document.querySelector(".website").style.display = "block";
+        }
+
+        function homeBtn() {
+            document.getElementById("iframe").src = DEFAULT_HOMEURL;
+        }
+
+        function init() {
+            updateLanguage();
+        }
+
+        function goSite() {
+            const site = document.getElementById("addressBar").value;
+            handleSite(site);
+        }
+
+        function updateAll(){
+            updateLanguage();
+        }
+
+        function updateSettings() {
+    const language = document.getElementById("language").value;
+    const autoHttps = document.getElementById("redirectHTTPAuto").value;
+    const defaultURLInput = document.getElementById("defaultURL");
+
+    if (autoHttps == "no") {
+        REDIRECT_HTTP_HTTPS = false;
+    } else if (autoHttps == "yes") {
+        REDIRECT_HTTP_HTTPS = true;
+    }
+
+    if (defaultURLInput) {
+        const defaultURL = defaultURLInput.value;
+
+        DEFAULT_LANGUAGE = language;
+        DEFAULT_HOMEURL = defaultURL;
+        updateAll();
+        hideOptions();
+        SHOWED_OPTIONS = false;
+    } else {
+        console.error("Element with ID 'defaultURL' not found.");
+    }
+
+    console.log("Apply changes success.");
+    console.log(`
+Language: ${DEFAULT_LANGUAGE}
+Default Browser URL: ${DEFAULT_HOMEURL}
+Redirect HTTPS Auto: ${REDIRECT_HTTP_HTTPS}
+`);
+}
+
+        function updateLanguage() {
+            if (DEFAULT_LANGUAGE == "pt-BR") {
+                // handle pt-BR
+                document.getElementById("goBtn").textContent = "Ir";
+                document.getElementById("addressBar").ariaPlaceholder = "Digite o URL";
+                document.getElementById("homeBtn").textContent = "Casa";
+                document.getElementById("menuBtn").textContent = "Opções";
+            } else if (DEFAULT_LANGUAGE == 'en-US') {
+                // handle en-US
+                document.getElementById("goBtn").textContent = "Go";
+                document.getElementById("addressBar").placeholder = "Type URL";
+                document.getElementById("homeBtn").textContent = "Home";
+                document.getElementById("menuBtn").textContent = "Options";
+            }
+        }
+
+        function refreshIFrame() {
+            const currentSite = document.getElementById("iframe").src;
+            changeIframeSite(currentSite);
+        }
+
+        function changeIframeSite(s) {
+            const frame = document.getElementById("iframe");
+            frame.src = s;
+        }
+
+        function handleSite(site) {
+            if (site == neutralContent.aboutblk) {
+                changeIframeSite(neutralContent.aboutblk);
+            } else if (site == "about:settings") {
+                showOptions();
+            } else if (site.startsWith("https")) {
+                console.log("Secured Connection Site");
+                changeIframeSite(site);
+            } else if (site.startsWith("http")) {
+                console.warn("not a secured conection.");
+                if (REDIRECT_HTTP_HTTPS) {
+                    const httpsSite = site.replace("http", "https");
+                    document.getElementById("addressBar").value = httpsSite;
+                    changeIframeSite(httpsSite);
+                    console.log("Redirecting to Https");
+                } else if (!REDIRECT_HTTP_HTTPS) {
+                    console.log("Procedding");
+                    changeIframeSite(site);
+                }
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>
