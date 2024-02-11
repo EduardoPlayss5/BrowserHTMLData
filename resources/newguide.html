@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f9f9f9;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+
+        .browserTitle {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #000;
+        }
+
+        #textorUrl {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            width: 300px;
+            box-sizing: border-box;
+        }
+
+        #goBtn {
+            background-color: #4285f4;
+            color: #fff;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        #goBtn:hover {
+            background-color: #1a73e8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <p class="browserTitle">BrowserHTML</p>
+        <input type="text" id="textorUrl" placeholder="Type URL or Search Text"/>
+        <button id="goBtn">Go!</button>
+    </div>
+</body>
+
+<script>
+    document.getElementById("goBtn").addEventListener("click", () => {
+        const typed = document.getElementById("textorUrl").value;
+
+        if (typed.startsWith("https")) {
+            console.log("secure connection");
+            window.location.href = typed;
+        } else if (typed.startsWith("http")) {
+            console.log("not secure connection");
+        } else if (!typed.startsWith("https") && !typed.startsWith("http")) {
+            const url = `https://www.google.com/search?query=${typed}`;
+            window.location.href = url;
+        }
+    })
+</script>
+
+</html>
